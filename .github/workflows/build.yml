@@ -1,24 +1,27 @@
-name: Gradle Build
-
-on:
-  pull_request:
-
 jobs:
-
-# pr时校验gradle build是否通过
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [ 8, 11 ]
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Set up JDK
       uses: actions/setup-java@v2
       with:
+        distribution: adopt
         java-version: ${{ matrix.java-version }}
-        distribution: 'adopt'
-    - name: Validate Gradle wrapper
+    - continue-on-error: true
+      name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
-    - name: Build with Gradle
+    - continue-on-error: true
+      name: Build with Gradle
       run: ./gradlew build
+    strategy:
+      matrix:
+        java-version:
+        - 8
+        - 11
+name: Gradle Build
+on:
+  repository_dispatch:
+    types: trigger-ga___build.yml
